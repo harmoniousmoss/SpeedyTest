@@ -20,9 +20,9 @@
 # Dependency directories (vendor)
 vendor/
 
-# Go modules
-/go.sum
-/go.mod
+# Go modules - Note: go.mod and go.sum should be committed
+# /go.sum
+# /go.mod
 
 # IDE/editor directories and settings
 .idea/
