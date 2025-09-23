@@ -2,7 +2,7 @@
 
 # ⚡ Flash - Modern Internet Speed Testing Tool
 
-Flash is a beautiful, modern web application that provides accurate internet speed testing with a sleek dark-themed interface. Built with Go and Fiber framework, featuring real-time speed measurements, responsive design, and smooth animations for an exceptional user experience.
+Flash tests your internet speed with a beautiful, modern interface and real-time measurements.
 
 ## ✨ Features
 
