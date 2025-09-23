@@ -1,7 +1,7 @@
 package main
 
 import (
-	"gospeed/handlers"
+	"flash/handlers"
 
 	"github.com/gofiber/fiber/v2"
 )
