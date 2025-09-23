@@ -1,75 +1,210 @@
-<!--views/index.html-->
-
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Internet Speed Test</title>
+    <title>Flash - Internet Speed Test</title>
     <link rel="stylesheet" href="/css/styles.css">
+    <meta name="description" content="Test your internet speed with Flash - accurate download and upload speed measurements">
 </head>
-
 <body>
-    <div class="container">
-        <h1>Your Public IP: <span id="public-ip">Loading...</span></h1>
+    <div class="app-wrapper">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="logo">⚡ Flash</h1>
+            <p class="subtitle">Internet Speed Test</p>
+        </div>
 
-        <div id="progress-section">
-            <div class="progress-container">
-                <p>Testing Download Speed...</p>
-                <div class="progress-bar" id="download-progress"></div>
+        <div class="container">
+            <!-- Main Content Grid -->
+            <div class="main-content">
+                <!-- IP Address Section -->
+                <div class="ip-item">
+                    <div class="ip-label">
+                        <span>
+                            <svg class="test-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9-9a9 9 0 00-9 9m0 0a9 9 0 019-9"/>
+                            </svg>
+                            Your Public IP
+                        </span>
+                    </div>
+                    <div class="ip-section">
+                        <div class="ip-spacer"></div>
+                        <div class="ip-result">
+                            <div class="ip-value" id="public-ip">
+                                <span class="ip-loading">
+                                    <span>Loading</span>
+                                    <div class="loading-dots">
+                                        <div class="loading-dot"></div>
+                                        <div class="loading-dot"></div>
+                                        <div class="loading-dot"></div>
+                                    </div>
+                                </span>
+                            </div>
+                            <div class="ip-unit">Address</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Speed Test Section -->
+                <div class="speed-section">
+            <!-- Download Test -->
+            <div class="test-item" id="download-section">
+                <div class="test-label">
+                    <span>
+                        <svg class="test-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/>
+                        </svg>
+                        Download Speed
+                    </span>
+                </div>
+                <div class="progress-container" id="download-progress-container">
+                    <div class="progress-track">
+                        <div class="progress-bar" id="download-progress"></div>
+                    </div>
+                    <div class="speed-result">
+                        <div class="speed-value" id="download-speed">--</div>
+                        <div class="speed-unit">Mbps</div>
+                    </div>
+                </div>
             </div>
 
-            <div id="download-result" class="result">Download Speed: <span id="download-speed">-</span></div>
-
-            <div class="progress-container">
-                <p>Testing Upload Speed...</p>
-                <div class="progress-bar" id="upload-progress"></div>
+            <!-- Upload Test -->
+            <div class="test-item" id="upload-section">
+                <div class="test-label">
+                    <span>
+                        <svg class="test-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                        </svg>
+                        Upload Speed
+                    </span>
+                </div>
+                <div class="progress-container" id="upload-progress-container">
+                    <div class="progress-track">
+                        <div class="progress-bar" id="upload-progress"></div>
+                    </div>
+                    <div class="speed-result">
+                        <div class="speed-value" id="upload-speed">--</div>
+                        <div class="speed-unit">Mbps</div>
+                    </div>
+                </div>
+                </div>
             </div>
+        </div>
 
-            <div id="upload-result" class="result">Upload Speed: <span id="upload-speed">-</span></div>
+        <!-- Footer -->
+        <div class="footer">
+            <p>A project by <a href="https://www.qwertyzxcvhu.com/" target="_blank" rel="noopener noreferrer">Syaeful Bahri</a></p>
         </div>
     </div>
 
     <script>
-        // Function to simulate progress bar for download/upload test
-        function simulateProgressBar(progressBarId, callback) {
-            let progressBar = document.getElementById(progressBarId);
-            let width = 0;
-            let interval = setInterval(() => {
-                if (width >= 100) {
-                    clearInterval(interval);
-                    callback();  // Call the callback once the progress is complete
+        // Enhanced progress bar animation with realistic timing
+        function animateProgressBar(progressBarId, duration = 3000, callback) {
+            const progressBar = document.getElementById(progressBarId);
+            const container = document.getElementById(progressBarId + '-container');
+
+            container.classList.add('testing-active');
+
+            let startTime = null;
+
+            function updateProgress(currentTime) {
+                if (!startTime) startTime = currentTime;
+
+                const elapsed = currentTime - startTime;
+                const progress = Math.min((elapsed / duration) * 100, 100);
+
+                // Smooth easing function for more realistic progress
+                const easedProgress = easeOutCubic(progress / 100) * 100;
+                progressBar.style.width = easedProgress + '%';
+
+                if (progress < 100) {
+                    requestAnimationFrame(updateProgress);
                 } else {
-                    width++;
-                    progressBar.style.width = width + '%';
+                    container.classList.remove('testing-active');
+                    if (callback) callback();
                 }
-            }, 50);  // Simulate progress
+            }
+
+            requestAnimationFrame(updateProgress);
         }
 
-        // Function to fetch speed test results
-        async function fetchSpeedTestResults() {
-            // Fetch the data from the server (fetch request to your backend)
-            const response = await fetch('/api/speedtest');
-            const data = await response.json();
+        // Easing function for smooth animation
+        function easeOutCubic(t) {
+            return 1 - Math.pow(1 - t, 3);
+        }
 
-            // Display the public IP
-            document.getElementById('public-ip').textContent = data.ip_address;
+        // Update status indicators (removed - no longer needed)
+        function updateStatus(testType, status) {
+            // Status badges removed for cleaner design
+        }
 
-            // Display the download speed after the progress bar fills
-            simulateProgressBar('download-progress', () => {
-                document.getElementById('download-speed').textContent = data.download_speed;
+        // Enhanced speed display with animation
+        function displaySpeed(elementId, speed) {
+            const element = document.getElementById(elementId);
+            const container = element.closest('.speed-result');
 
-                // After download test finishes, start the upload test
-                simulateProgressBar('upload-progress', () => {
-                    document.getElementById('upload-speed').textContent = data.upload_speed;
+            // Extract numeric value from speed string
+            const numericSpeed = parseFloat(speed.replace(' Mbps', ''));
+
+            // Animate the number counting up
+            let currentValue = 0;
+            const increment = numericSpeed / 30; // 30 steps for smooth animation
+
+            const counter = setInterval(() => {
+                currentValue += increment;
+                if (currentValue >= numericSpeed) {
+                    currentValue = numericSpeed;
+                    clearInterval(counter);
+                    container.classList.add('speed-complete');
+                }
+                element.textContent = currentValue.toFixed(2);
+            }, 50);
+        }
+
+        // Main speed test function
+        async function runSpeedTest() {
+            try {
+                // Start download test
+                updateStatus('download', 'testing');
+
+                // Fetch results (this happens in background)
+                const resultPromise = fetch('/api/speedtest').then(r => r.json());
+
+                // Animate download progress
+                animateProgressBar('download-progress', 4000, async () => {
+                    updateStatus('download', 'complete');
+
+                    const data = await resultPromise;
+
+                    // Display results
+                    document.getElementById('public-ip').innerHTML = data.ip_address;
+                    displaySpeed('download-speed', data.download_speed);
+
+                    // Start upload test
+                    setTimeout(() => {
+                        updateStatus('upload', 'testing');
+
+                        animateProgressBar('upload-progress', 3000, () => {
+                            updateStatus('upload', 'complete');
+                            displaySpeed('upload-speed', data.upload_speed);
+                        });
+                    }, 500);
                 });
-            });
+
+            } catch (error) {
+                console.error('Speed test failed:', error);
+                document.getElementById('public-ip').textContent = 'Error loading IP';
+                document.getElementById('download-speed').textContent = 'Error';
+                document.getElementById('upload-speed').textContent = 'Error';
+            }
         }
 
-        // Start the process when the page is fully loaded
-        document.addEventListener('DOMContentLoaded', fetchSpeedTestResults);
+        // Start the speed test when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            // Small delay for better UX
+            setTimeout(runSpeedTest, 1000);
+        });
     </script>
 </body>
-
 </html>
