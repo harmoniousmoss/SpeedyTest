@@ -25,9 +25,14 @@ func RunSpeedTest(s *speedtest.Server) (*SpeedTestResult, error) {
 		return nil, fmt.Errorf("failed to perform upload test")
 	}
 
-	// Create result structure
+	// Create result structure with proper unit conversion
+	// The speedtest-go library returns speeds in Bps (bytes per second)
+	// Convert to Mbps: divide by 1,000,000 and multiply by 8 (bits/bytes)
+	downloadMbps := (s.DLSpeed * 8) / 1000000
+	uploadMbps := (s.ULSpeed * 8) / 1000000
+
 	return &SpeedTestResult{
-		DownloadSpeed: fmt.Sprintf("%.2f Mbps", s.DLSpeed),
-		UploadSpeed:   fmt.Sprintf("%.2f Mbps", s.ULSpeed),
+		DownloadSpeed: fmt.Sprintf("%.2f Mbps", downloadMbps),
+		UploadSpeed:   fmt.Sprintf("%.2f Mbps", uploadMbps),
 	}, nil
 }
